@@ -26,7 +26,7 @@ const logger = (req, res, next) => {
   const now = new Date ()
   const hours = now.getHours ();
   const minutes = now.getMinutes ();
-  console.log (`${hours}h${minutes}-${req.url} DANS LOGGER`)
+  console.log (`${hours}h${minutes < 10 && '0' + minutes}-${req.url} DANS LOGGER`)
 
   next()
 }
