@@ -1,17 +1,26 @@
 const express = require('express')
 const router = express.Router()
-let mockCoworkings = require ("../mock-coworking")
+const { Coworking } = require('../db/sequelizeSetup')
+let mockCoworkings = require('../mock-coworking')
 
 router
-    .route('/')                     //methode pour récupérer l'url
-    .get((req, res) => {            // fonction de call back
+    .route('/')
+    .get((req, res) => {
         res.json(mockCoworkings)
     })
     .post((req, res) => {
-        const newId = mockCoworkings[mockCoworkings.length - 1].id + 1
-        let coworking = { id: newId, ...req.body }
-        mockCoworkings.push(coworking)
-        const result = { message: `Le coworking a bien été ajouté`, data: coworking }
+        // const newId = mockCoworkings[mockCoworkings.length - 1].id + 1
+        // let coworking = { id: newId, ...req.body }
+        // mockCoworkings.push(coworking)
+        Coworking.create({
+            name: "Oasis Coworking",
+            price: { "hour": 4, "day": 21, "month": 100 },
+            address: { "number": "68bis", "street": "avenue Jean Jaurès", "postCode": 33150, "city": "Cenon" },
+            superficy: 200,
+            capacity: 27,
+        })
+
+        const result = { message: `Le coworking a bien été ajouté` }
         res.json(result)
     })
 
@@ -41,7 +50,7 @@ router
         res.json(result)
     })
     .delete((req, res) => {
-        let coworking = mockCoworkings.find((el) => el.id === parseInt(req.params.id))
+        const coworking = mockCoworkings.find((el) => el.id === parseInt(req.params.id))
 
         let result;
         if (coworking) {

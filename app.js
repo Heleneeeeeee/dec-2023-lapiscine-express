@@ -3,6 +3,8 @@ const morgan = require('morgan')
 const app = express()
 const port = 3000
 
+const {sequelize} = require('./db/sequelizeSetup')
+
 app.use(express.json())
 app.use(morgan('dev'))
 
