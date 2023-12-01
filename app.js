@@ -20,13 +20,3 @@ app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
 
-// Demo exports / require depuis le fichier example.js
-
-// const monImportation = require('./examples')
-// console.log(monImportation)
-
-// const monImportation = require('./examples')
-// console.log(monImportation.myObj, monImportation.myObj2, monImportation.)
-
-const { add, substract } = require('./examples')
-substract(5, 2)
