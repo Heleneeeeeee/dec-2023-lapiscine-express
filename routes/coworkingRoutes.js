@@ -49,27 +49,18 @@ router
 router
     .route('/:id')
     .get((req, res) => {
-    //     let result = mockCoworkings.find(el => el.id === parseInt(req.params.id))
+        let result = mockCoworkings.find(el => el.id === parseInt(req.params.id))
 
-    //     if (!result) {
-    //         result = `Aucun élément ne correspond à l'id n°${req.params.id}`
-    //     }
-    //     res.json(result)
-    // })
-    Coworking.findByPk(17)
-        .then((coworking) => {
-        res.json(coworking)
-        console.log(coworking)
+        if (!result) {
+            result = `Aucun élément ne correspond à l'id n°${req.params.id}`
+        }
+        res.json(result)
     })
-        . catch ((error) => {
-        res.json(error.message)
-    })    
-})
 
     .put((req, res) => {
-    Coworking.update({ name: "Changement de nom" }, {
+    Coworking.update({ name: "WIN Mériadeck" }, {
         where: {
-            name: "WIN mériadeck"
+            name: "WIN"
         }
     })
     .then((coworking) => {
