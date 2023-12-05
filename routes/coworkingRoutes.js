@@ -2,24 +2,13 @@ const express = require('express')
 const router = express.Router()
 // const { Op } = require('sequelize')
 const { Coworking } = require('../db/sequelizeSetup')
-const {findAllCoworkings} = require('../controllers/coworkingControllers')
+const {findAllCoworkings, createNewCoworking} = require('../controllers/coworkingControllers')
 
 
 router
     .route('/')
     .get(findAllCoworkings)
-    .post((req, res) => {
-        const newCoworking = { ...req.body }
-
-        Coworking.create(newCoworking)
-            .then((coworking) => {
-                res.json({ message: 'Le coworking a bien été créé', data: coworking })
-                console.log(coworking)
-            })
-            .catch((error) => {
-                res.json({ message: `Le coworking n'a pas pu être créé`, data: error.message })
-            })
-    })
+    .post(createNewCoworking)
 
 router
     .route('/:id')
@@ -39,54 +28,51 @@ router
     })
 
     .put((req, res) => {
-        Coworking.update(req.body, {
-            where: {
-                id: req.params.id
-            }
-        })
-            .then((result) => {
-                if (result > 0) {
-                    Coworking.findByPk(req.params.id)
-                    .then ((coworking) =>{
-                        res.json({ message: 'Le coworking a bien été mis à jour.', data: coworking })
+        Coworking.findByPk(req.params.id)
+            .then ((result) =>{
+                if (result){
+                    result.update(req.body)
+                    .then (()=>{
+                        res.json({ message: 'Le coworking a bien été mis à jour.', data: result })
                     })
                     .catch ((error) =>{
-                        res.json({ mesage: `Une erreur est survenue`, data: error.message })
-                    })
-                   
-                } else {
-                    res.json({ message: `Aucun coworking n'a été mis à jour.` })
-                }
-            })
-            .catch(error => {
-                res.json({ message: 'La mise à jour a échoué.', data: error.message })
-            })
-    }) 
-
+                        res.json({ message: `La mise à jour àa échoué`, data: error.message })
+                    })    
+            } else {
+                res.json({ message: `Aucun coworking n'a été mis à jour.` })
+            } 
+        })
+        .catch(error => {
+            res.json({ message: 'La mise à jour a échoué.', data: error.message })
+        })
+    })
+        
+       
+      
     .delete((req, res) => {
         //A. Vérifie que l'ID passé en req.params.id renvoie bien une ligne de notre table.
         Coworking.findByPk(req.params.id)
-            .then ((coworking)=>{
+            .then ((result)=>{
                 //B. Si un coworking correspond à l'ID alors on exécute la méthode .destroy()
-                if (coworking) {
-                    Coworking.destroy({ where: { id: req.params.id } })
+                if (result) {
+                    result.destroy()
                         //C. Si le coworking est bien supprimé, on affiche un message avec comme data le coworking récupéré dans le .finByPk()
-                        .then((result) => {
-                            res.json({ mesage: `Le coworking a bien été supprimé.`, data: coworking })
+                        .then(() => {
+                            res.json({ message: `Le coworking a bien été supprimé.`, data: result})
                         })
                         // D. Si la suppression a échoué, on retourne une réponse à POSTMAN
                         .catch((error) => {
-                            res.json({ mesage: `La suppression a échoué.`, data: error.message })
+                            res.json({ message: `La suppression a échoué.`, data: error.message })
                  })
                 } else {
                     // B. Si aucun coworking ne correspond à l'ID alos on retourne une réponse à POSTMAN
-                    res.json({ mesage: `Aucun coworking trouvé`})
+                    res.json({ message: `Aucun coworking trouvé`})
                 }
 
             })
              // E. Si une erreur est survenue dès le findByPk, on retourne une réponse à POSTMAN
             .catch((error) => {
-                res.json({ mesage: `La requête n'a pas aboutie.` })
+                res.json({ message: `La requête n'a pas aboutie.` })
 
             })
         

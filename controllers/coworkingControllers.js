@@ -11,6 +11,19 @@ const findAllCoworkings = ((req, res) => {
         })
 })
 
-module.exports={findAllCoworkings}
+const createNewCoworking = ((req, res) => {
+    const newCoworking = { ...req.body }
+
+    Coworking.create(newCoworking)
+        .then((coworking) => {
+            res.json({ message: 'Le coworking a bien été créé', data: coworking })
+            console.log(coworking)
+        })
+        .catch((error) => {
+            res.json({ message: `Le coworking n'a pas pu être créé`, data: error.message })
+        })
+})
+
+module.exports={findAllCoworkings, createNewCoworking}
 
 

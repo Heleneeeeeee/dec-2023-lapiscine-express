@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const {User} = require ('../db/sequelizeSetup')
 
 router
     .route('/')
@@ -9,7 +10,7 @@ router
                 res.json(user)
             })
             .catch ((error)=>{
-                
+                res.json(error.message)
             })
         
 
