@@ -21,12 +21,19 @@ sequelize.sync({ force: true })
     .then (()=> {
         mockCoworkings.forEach(element => {
             const newCoworking = {...element}
-            Coworking.create (newCoworking)
-       
-        })
+            Coworking.create(newCoworking)
+                .then(() => { })
+                .catch((error) => {
+                    console.log(error.message)
+                })
+            })
         mockUsers.forEach(element => {
             const newUser = {...element}
             User.create (newUser)
+                .then(() => { })
+                .catch((error) => {
+                    console.log(error.message)
+            })
         })
     })
     .catch(error => {

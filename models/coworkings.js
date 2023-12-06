@@ -4,20 +4,54 @@ module.exports = (sequelize, DataTypes) => {
         // Model attributes are defined here
         name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: {
+                msg: "Le nom est déjà pris."
+            },
+            validate: {
+                len: {
+                    msg: "Le nom doit avoir au moins un nombre de caractères compris entre 2 et 50.",
+                    args:[2, 50]
+                }
+            },
         },
+        
         price: {
-            type: DataTypes.JSON
+            type: DataTypes.JSON,
+            validate: {
+                isPriceValid(value) {
+                    //custom validator: au moins un des 3 prix doit être renseigné par le client
+                    if (value.hasOwnProperty('hour') && value.hasOwnProperty('day') && value.hasOwnProperty('month')) {
+                        if (value.hour === null && value.day === null && value.month === null) {
+                            throw new Error('Au moins un des trois tarifs doit être renseigné.')
+                        }
+                    } else {
+                        throw new Error(`La syntaxe des tarifs n'est pas correcte.`)
+                    }
+                }
+
+            }
         },
         address: {
             type: DataTypes.JSON
         },
         superficy: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            validate: {
+                isInt: {
+                    msg: "La superficie doit être un nombre entier."
+                }
+            }
         },
         capacity: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            validate: {
+                isInt: {
+                    msg: "La capacité doit être un nombre entier."
+                }
+            }
         }
-    }
-    );
+        
+    });
+    
 }
