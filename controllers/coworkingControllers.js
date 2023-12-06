@@ -32,7 +32,7 @@ const createCoworking = (req, res) => {
 
     Coworking.create(newCoworking)
         .then((coworking) => {
-            res.json({ message: 'Le coworking a bien été créé.', data: coworking })
+            res.status(201).json({ message: 'Le coworking a bien été créé.', data: coworking })
             console.log(coworking)
         })
         .catch((error) => {
@@ -44,15 +44,12 @@ const updateCoworking = (req, res) => {
     Coworking.findByPk(req.params.id)
         .then ((result) =>{
             if (result){
-                result.update(req.body)
+                return result.update(req.body)
                 .then (()=>{
                     res.status(201).json({ message: 'Le coworking a bien été mis à jour.', data: result })
-                })
-                .catch ((error) =>{
-                    res.status(500).json({ message: `La mise à jour a échoué.`, data: error.message })
-                })    
+                }) 
         } else {
-            res.status(404).json({ message: `Aucun coworking à mettre à jour n'a été trouvé.` })
+            res.status(404).json({ message: `Aucun coworking à mettre à jour n'a été trouvé.`, data: error.message })
         } 
     })
     .catch(error => {
@@ -66,18 +63,15 @@ const deleteCoworking = (req, res) => {
         .then ((result)=>{
             //B. Si un coworking correspond à l'ID alors on exécute la méthode .destroy()
             if (result) {
-                result.destroy()
+                return result.destroy()
                     //C. Si le coworking est bien supprimé, on affiche un message avec comme data le coworking récupéré dans le .finByPk()
                     .then(() => {
                         res.json({ message: `Le coworking a bien été supprimé.`, data: result})
                     })
-                    // D. Si la suppression a échoué, on retourne une réponse à POSTMAN
-                    .catch((error) => {
-                        res.status(500).json({ message: `La suppression a échoué.`, data: error.message })
-             })
+                    
             } else {
                 // B. Si aucun coworking ne correspond à l'ID alos on retourne une réponse à POSTMAN
-                res.status(404).json({ message: `Aucun coworking trouvé`})
+                res.status(404).json({ message: `Aucun coworking trouvé`, data: error.message})
             }
 
         })

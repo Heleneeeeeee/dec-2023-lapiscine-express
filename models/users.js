@@ -1,22 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('User', {
-        
         username: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: {
-                msg: "Le nom est déjà pris."
+                msg: "Le nom d'utilisateur est déjà pris."
+            },
+            validate: {
+                len: {
+                    msg: "Le nom d'utilisateur doit avoir un nombre de caractères compris entre 8 et 40.",
+                    args: [8, 40]
+                }
             },
         },
         password: {
             type: DataTypes.STRING,
-            validate:{
-                len: {
-                    args:[8],
-                    msg:"Le mot de passe doit contenir au minimum 8 caractères"
-                }
-                
-            }
+            allowNull: false
         }
     }
     );

@@ -31,7 +31,7 @@ const createUser= (req, res)=>{
 
     User.create(newUser)
         .then((user) => {
-            res.json({ message: `L'utilisateur a bien été créé.`, data: user })
+            res.status(201).json({ message: `L'utilisateur a bien été créé.`, data: user })
             console.log(user)
         })
         .catch((error) => {
@@ -43,13 +43,10 @@ const updateUser =(req, res)=>{
     User.findByPk(req.params.id)
         .then((result)=>{
             if(result){
-                result.update()
+                return result.update()
                 .then (()=>{
-                    res.json({ message: `L'utilisateur a bien été mis à jour.`, data: result })
+                    res.status(201).json({ message: `L'utilisateur a bien été mis à jour.`, data: result })
                 })
-                .catch ((error) =>{
-                    res.status(500).json({ message: `La mise à jour a échoué.`, data: error.message })
-                })    
         } else {
             res.status(404).json({ message: `Aucun utilisateur à mettre à jour n'a été trouvé.` })
         } 
@@ -63,19 +60,16 @@ const deleteUser= (req,res)=>{
     User.findByPk(req.params.id)
         .then((result)=>{
             if(result){
-                result.destroy()
-                    .then(() => {
+                return result.destroy()
+                    .then((result) => {
                         res.json({ message: `L'utilisateur' a bien été supprimé.`, data: result})
-                    })
-                    .catch((error) => {
-                        res.status(500).json({ message: `La suppression a échoué.`, data: error.message })
                 })
         } else {
             res.status(404).json({ message: `Aucun utilisateur trouvé`})
         }
     })
         .catch((error) => {
-            res.status(500).json({ message: `La requête n'a pas aboutie.` })
+            res.status(500).json({ message: `La requête n'a pas aboutie.`, data: error.message })
 
         })
 
