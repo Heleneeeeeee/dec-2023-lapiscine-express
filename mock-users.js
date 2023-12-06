@@ -1,15 +1,18 @@
 const users = [
     {
         id: 5,
-        username: "Pauline"
+        username: "PaulineR7",
+        password: "hello"
     },
     {
         id: 6,
-        username: "Helene"
+        username: "Helene15",
+        password: "world"
     },
     {
         id: 7,
-        username: "Jess"
+        username: "Jess1234",
+        password: "mdp"
     }
     
 

@@ -4,6 +4,7 @@ const { Sequelize, DataTypes } = require('sequelize');
 const mockCoworkings = require('../mock-coworkings')
 const mockUsers = require ('../mock-users')
 const UserModel = require ('../models/users')
+const bcrypt = require ('bcrypt')
 
 // A. On créé une instance de bdd qui communique avec Xampp 
 const sequelize = new Sequelize('bordeaux_coworkings', 'root', '', {
@@ -27,19 +28,22 @@ sequelize.sync({ force: true })
                     console.log(error.message)
                 })
             })
-        mockUsers.forEach(element => {
-            const newUser = {...element}
-            User.create (newUser)
-                .then(() => { })
-                .catch((error) => {
-                    console.log(error.message)
-            })
-        })
-    })
+
+        mockUsers.forEach(user => {
+            bcrypt.hash(user.password, 10)
+                .then((hashResult)=> {
+                    User.create({ ...user, password: hashResult })
+                        .then(() => { })
+                        .catch((error) => {
+                            console.log(error.message)
+                        })
+                 })
     .catch(error => {
         console.log (error)
+    })
 
     })
+})
 
 sequelize.authenticate()
     .then(() => console.log('La connexion à la base de données a bien été établie.'))

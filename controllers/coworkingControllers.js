@@ -1,5 +1,6 @@
-// const { Op } = require('sequelize')
+const { Sequelize } = require('sequelize');
 const { Coworking } = require('../db/sequelizeSetup')
+const {UniqueConstraintError, ValidationError} = require ('sequelize')
 
 const findAllCoworkings = (req, res) => {
     console.log(req.query);
@@ -36,6 +37,9 @@ const createCoworking = (req, res) => {
             console.log(coworking)
         })
         .catch((error) => {
+            if (error instanceof UniqueConstraintError || error instanceof ValidationError) {
+                return res.status(400).json({ message: error.message })
+            }
             res.status(500).json({ message: `Le coworking n'a pas pu être créé.`, data: error.message })
         })
 }
@@ -45,7 +49,7 @@ const updateCoworking = (req, res) => {
         .then ((result) =>{
             if (result){
                 return result.update(req.body)
-                .then (()=>{
+                .then (() => {
                     res.status(201).json({ message: 'Le coworking a bien été mis à jour.', data: result })
                 }) 
         } else {
@@ -53,7 +57,10 @@ const updateCoworking = (req, res) => {
         } 
     })
     .catch(error => {
-        res.status(500).json({ message: 'La mise à jour a échoué.', data: error.message })
+        if (error instanceof UniqueConstraintError || error instanceof ValidationError) {
+            return res.status(400).json({ message: error.message })
+        }
+        res.status(500).json({ message: 'Une erreur est survenue.', data: error.message })
     })
 }
 

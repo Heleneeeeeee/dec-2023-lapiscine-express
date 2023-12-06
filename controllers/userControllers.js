@@ -1,5 +1,7 @@
 // const { Op } = require('sequelize')
 const {User} = require ('../db/sequelizeSetup')
+const {UniqueConstraintError, ValidationError} = require ('sequelize')
+const bcrypt = require ('bcrypt')
 
 const findAllUSers = (req, res)=>{
     User.findAll()
@@ -27,16 +29,20 @@ const findUserByPk = (req, res)=>{
 }
 
 const createUser= (req, res)=>{
-    const newUser = { ...req.body }
-
-    User.create(newUser)
-        .then((user) => {
-            res.status(201).json({ message: `L'utilisateur a bien été créé.`, data: user })
-            console.log(user)
-        })
+    bcrypt.hash(req.body.password, 10)
+        .then((hash)=> {
+            User.create({...req.body, password: hash})
+                .then((user) => {
+                    res.status(201).json({ message: `L'utilisateur a bien été créé.`, data: user })
+                })
         .catch((error) => {
+            if (error instanceof UniqueConstraintError || error instanceof ValidationError) {
+                return res.status(400).json({ message: error.message })
+            }
             res.status(500).json({ message: `L'utilisateur n'a pas pu être créé.`, data: error.message })
         })
+
+    });
 }
 
 const updateUser =(req, res)=>{
@@ -52,7 +58,10 @@ const updateUser =(req, res)=>{
         } 
     })
     .catch(error => {
-        res.status(500).json({ message: 'La mise à jour a échoué.', data: error.message })
+        if (error instanceof UniqueConstraintError || error instanceof ValidationError) {
+            return res.status(400).json({ message: error.message })
+        }
+        res.status(500).json({ message: 'Une erreur est survenue', data: error.message })
     })
 }
 
@@ -68,11 +77,10 @@ const deleteUser= (req,res)=>{
             res.status(404).json({ message: `Aucun utilisateur trouvé`})
         }
     })
-        .catch((error) => {
-            res.status(500).json({ message: `La requête n'a pas aboutie.`, data: error.message })
-
-        })
-
-}
+    .catch(error => {
+        res.status(500).json({ message: `Une erreur est survenue`, data: error.message })
+    })
+        
+    }
 
 module.exports={findAllUSers, createUser, findUserByPk,updateUser, deleteUser}
