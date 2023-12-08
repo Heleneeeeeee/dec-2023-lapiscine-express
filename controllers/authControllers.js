@@ -1,4 +1,4 @@
-const { User } = require('../db/sequelizeSetup')
+const { User, Role } = require('../db/sequelizeSetup')
 const bcrypt = require ('bcrypt')
 const jwt = require ('jsonwebtoken')
 const SECRET_KEY = require ('../configs/tokenData')
@@ -13,15 +13,19 @@ const login = (req, res) => {
             bcrypt.compare(req.body.password, result.password)
                 .then ((isValid) => {
                     // D. Si le mot de passe n'est pas le bon, on renvoie une erreur client, non authentifié
-                    if (!isValid){
+                    if (!isValid) {
                         return res.status(401).json({message: `Le mot de passe n'est pas valide`})
                     }
                     // E. On génère un token qui servira à vérifier dans chaque endpoint où ce sera nécessaire si l'utilisateur peut consommer la ressource. Dans l'état actuel, le token est utilisé dans le POST COWORKINGS
                    const token = jwt.sign({
-                    data:result.username
+                        data:result.username
                    }, SECRET_KEY, {expiresIn:'1h'});
+
                    res.json({message:`Login réussi`, data: token})
-            })
+                })
+                .catch(error => {
+                    console.log(error.message)
+                })
         })
 
         .catch((error) => {
@@ -30,4 +34,56 @@ const login = (req, res) => {
 
 }
 
-module.exports = { login }
+const protect = (req, res, next) => {
+    if (!req.headers.authorization) {
+        return res.status(401).json({ message: `Vous n'êtes pas authentifié.` })
+    }
+
+    const token = req.headers.authorization.split(' ')[1]
+
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, SECRET_KEY);
+            req.username = decoded.data;
+            next()
+        } catch (error) {
+            return res.status(403).json({ message: `Le token n'est pas valide.` })
+        }
+    }
+}
+
+
+// Middleware de restriction d'accès basé sur le rôle de l'utilisateur
+const restrict = (req, res, next) => {
+    // Recherche de l'utilisateur dans la base de données par le nom d'utilisateur fourni dans la requête
+    User.findOne({ 
+        where: { 
+            username: req.username
+        } 
+    })
+        .then (user=>{
+         // Si l'utilisateur est trouvé, recherche du rôle associé à cet utilisateur
+            Role.findByPk(user.RoleId)
+                .then(role => {
+                    // Vérifie si le rôle de l'utilisateur est 'admin'
+                    if (role.label==='admin'){
+                    // Si l'utilisateur a le rôle 'admin', autorise l'accès à la ressource suivante
+                        next()
+                    } else {
+                        // Si le rôle n'est pas 'admin', renvoie une réponse d'erreur avec un statut 403 (Accès interdit)
+                        res.status(403).json({message: `Droits insuffisants`})
+                    }
+                })
+                 // Gestion des erreurs lors de la recherche du rôle
+                .catch(error => {
+                    console.log(error.message)
+                })
+        })
+        .catch(error => {
+            // Gestion des erreurs lors de la recherche de l'utilisateur
+            console.log(error)
+        })
+}
+
+
+module.exports = { login, protect, restrict }

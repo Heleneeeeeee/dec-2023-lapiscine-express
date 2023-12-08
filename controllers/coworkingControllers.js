@@ -1,4 +1,3 @@
-const { Sequelize } = require('sequelize');
 const { Coworking } = require('../db/sequelizeSetup')
 const {UniqueConstraintError, ValidationError} = require ('sequelize')
 const jwt = require ('jsonwebtoken')
@@ -31,27 +30,6 @@ const findCoworkingByPk = (req, res) => {
 }
 
 const createCoworking = (req, res) => {
-    // console.log(req.headers.authorization)
-    //A. On vérifie qu'il y a bien un token dans l'en-tête de la requête
-    if(!req.headers.authorization){
-        //B. Erreur 401 car l'utilisateur n'est pas authentifié
-        return res.status(401).json({ message: `Vous n'êtes pas authentifié` })
-        
-    }
-    //C. On récupère le token uniquement, on enlève "Bearer"
-    const token = req.headers.authorization.split(' ')[1]
-
-    if(token){
-        try {
-            //D. On décode le token à l'aide de la même clé secrète qui a servi à générer le token
-            const decoded = jwt.verify(token, SECRET_KEY);
-            console.log(decoded)
-          } catch(error) {
-            // E. La vérification a lévé une erreur, le return met fin au controller, donc pas de création de Coworking
-            return res.status(403).json({message: `Le token n'est pas valide`})
-          }
-          
-    }
     const newCoworking = { ...req.body }
 
     Coworking.create(newCoworking)
