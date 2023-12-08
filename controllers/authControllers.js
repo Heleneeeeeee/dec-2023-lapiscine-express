@@ -1,4 +1,4 @@
-const { User, Role } = require('../db/sequelizeSetup')
+const { User, Role, Coworking } = require('../db/sequelizeSetup')
 const bcrypt = require ('bcrypt')
 const jwt = require ('jsonwebtoken')
 const SECRET_KEY = require ('../configs/tokenData')
@@ -85,5 +85,86 @@ const restrict = (req, res, next) => {
         })
 }
 
+//implémenter le middleware qui sera utilisé sur updateCoworking et deletecoworking qui permettra d'interagir sur la ressource seulment si on en est l'auteur renvoie une erreur 403
+const restrictToOwnUser=(req, res, next)=> {
+    User.findOne(
+     {
+     where: 
+         {username:req.username }
+ 
+    })
+    .then (user => {
+     if(!user){
+         return res.status(40).json({message: `Pas d'utilisateur trouvé`})
+     }
+     Coworking.findByPk(req.params.id)
+         .then(coworking => {
+             if(user.id === coworking.UserId) {
+                 next()
+             } else {
+           
+             return res.status(403).json({message: `Vous n'êtes pas l'auteur de la ressource`})
+         }
+     })
+     .catch(error => {
+         return res.status(404).json({ message: `Pas de coworking trouvé.` })
+     })
+ })
+ .catch(error => console.log(error.message))
+ 
+ }
 
-module.exports = { login, protect, restrict }
+
+
+module.exports = { login, protect, restrict, restrictToOwnUser }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

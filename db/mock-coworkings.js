@@ -7,6 +7,7 @@ const coworkings = [
         picture: "",
         superficy: 1400,
         capacity: 122,
+        UserId: 5,
         created: new Date()
     },
     {
@@ -17,6 +18,7 @@ const coworkings = [
         picture: "",
         superficy: 95,
         capacity: 45,
+        UserId: 5,
         created: new Date()
     },
     {
@@ -27,6 +29,7 @@ const coworkings = [
         picture: "",
         superficy: 200,
         capacity: 27,
+        UserId: 6,
         created: new Date()
     },
     {
@@ -37,6 +40,7 @@ const coworkings = [
         picture: "",
         superficy: 1850,
         capacity: 130,
+        UserId: 6,
         created: new Date()
     },
     {
@@ -47,6 +51,7 @@ const coworkings = [
         picture: "",
         superficy: 300,
         capacity: 253,
+        UserId: 7,
         created: new Date()
     },
     {
@@ -57,6 +62,7 @@ const coworkings = [
         picture: "",
         superficy: 600,
         capacity: 136,
+        UserId: 7,
         created: new Date()
     },
     {
@@ -67,6 +73,7 @@ const coworkings = [
         picture: "",
         superficy: 150,
         capacity: 52,
+        UserId: 5,
         created: new Date()
     },
     {
@@ -77,6 +84,7 @@ const coworkings = [
         picture: "",
         superficy: 200,
         capacity: 205,
+        UserId: 6,
         created: new Date()
     },
     {
@@ -87,6 +95,7 @@ const coworkings = [
         picture: "",
         superficy: 400,
         capacity: 50,
+        UserId: 7,
         created: new Date()
     },
     {
@@ -97,6 +106,7 @@ const coworkings = [
         picture: "",
         superficy: 220,
         capacity: 152,
+        UserId: 5,
         created: new Date()
     },
     {
@@ -107,6 +117,7 @@ const coworkings = [
         picture: "",
         superficy: 600,
         capacity: 50,
+        UserId: 6,
         created: new Date()
     }
 ];

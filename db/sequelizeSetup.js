@@ -4,6 +4,7 @@ const UserModel = require ('../models/users');
 const RoleModel = require ('../models/roleModel');
 const { Sequelize, DataTypes } = require('sequelize');
 const  {setCoworkings, setUsers, setRoles} = require ('./setDataSample')
+
 // A. On créé une instance de bdd qui communique avec Xampp 
 const sequelize = new Sequelize('bordeaux_coworkings', 'root', '', {
     host: 'localhost',
@@ -26,7 +27,7 @@ Coworking.belongsTo(User)
 // D. On synchronise la BDD avec les models défini dans notre API
 sequelize.sync({ force: true })
     .then (()=> {
-        setCoworkings(Coworking)
+        // setCoworkings(Coworking)
         setUsers(User)
         setRoles(Role)
     })
@@ -40,4 +41,4 @@ sequelize.authenticate()
     .catch(error => console.error(`Impossible de se connecter à la base de données ${error}`))
 
 
-module.exports = { sequelize, Coworking, User, Role }
+module.exports = { Coworking, User, Role }
